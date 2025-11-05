@@ -46,26 +46,33 @@
 </main>
 
 <script>
-  const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
-  const tokenParams = hashParams.toString();
-  const deepLink = `childmindpro://auth/callback#${tokenParams}`;
+  const hashParams = window.location.hash.startsWith('#')
+    ? window.location.hash.slice(1)
+    : '';
+  const searchParams = window.location.search.startsWith('?')
+    ? window.location.search.slice(1)
+    : '';
 
-  const openApp = () => { window.location.href = deepLink; };
+  const tokenParams = hashParams || searchParams;
+  const hasTokens = Boolean(tokenParams);
+  const deepLinkBase = 'childmindpro://auth/callback';
+  const deepLink = hasTokens ? `${deepLinkBase}#${tokenParams}` : 'childmindpro://auth/callback';
 
-  document.getElementById('open-app').addEventListener('click', openApp);
+  const openApp = () => {
+    window.location.href = deepLink;
+  };
+
+  const openButton = document.getElementById('open-app');
+  openButton.addEventListener('click', openApp);
 
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  if (tokenParams && isMobile) {
-    setTimeout(openApp, 350);
+  if (hasTokens && isMobile) {
+    setTimeout(openApp, 400);
   }
 
-  if (!tokenParams) {
-    document.getElementById('fallback').textContent =
-      'Token missing. Please return to the app and sign in.';
-  } else {
-    document.getElementById('fallback').textContent =
-      'Still can’t open it? Re-open Childmind Pro and sign in.';
-  }
+  document.getElementById('fallback').textContent = hasTokens
+    ? 'Still can’t open it? Re-open Childmind Pro and sign in.'
+    : 'Token missing. Please return to the app and sign in.';
 </script>
 </body>
 </html>
