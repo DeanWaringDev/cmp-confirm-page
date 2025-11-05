@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Childmind Pro – Email Confirmed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f6f5ff;
+      color: #1f2933;
+    }
+    body { margin: 0; display: grid; min-height: 100vh; place-items: center; }
+    main {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: clamp(1.5rem, 4vw, 3rem);
+      width: min(480px, 90vw);
+      box-shadow: 0 30px 60px rgba(127, 149, 209, 0.18);
+      text-align: center;
+    }
+    h1 { margin-top: 0; font-size: clamp(1.8rem, 4vw, 2.4rem); }
+    p { margin: 0.75rem 0; line-height: 1.6; color: #52606d; }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.9rem 1.4rem;
+      border-radius: 12px;
+      border: none;
+      background: #7f95d1;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:active { transform: scale(0.98); }
+    small { display: block; margin-top: 1rem; color: #9aa5b1; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Email Confirmed 🎉</h1>
+  <p>Your Childmind Pro account is ready.</p>
+  <p>If the app didn’t open automatically, tap the button below to launch it.</p>
+  <button id="open-app">Open Childmind Pro</button>
+  <small id="fallback"></small>
+</main>
+
+<script>
+  const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+  const tokenParams = hashParams.toString();
+  const deepLink = `childmindpro://auth/callback#${tokenParams}`;
+
+  const openApp = () => { window.location.href = deepLink; };
+
+  document.getElementById('open-app').addEventListener('click', openApp);
+
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (tokenParams && isMobile) {
+    setTimeout(openApp, 350);
+  }
+
+  if (!tokenParams) {
+    document.getElementById('fallback').textContent =
+      'Token missing. Please return to the app and sign in.';
+  } else {
+    document.getElementById('fallback').textContent =
+      'Still can’t open it? Re-open Childmind Pro and sign in.';
+  }
+</script>
+</body>
+</html>
